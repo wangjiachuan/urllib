@@ -44,7 +44,7 @@ class Mailer(object):
         # 设置服务器名称、用户名、密码以及邮件后缀
         self.mail_host = "smtp.163.com"
         self.mail_user = "W93126721"
-        self.mail_pass = "198039"
+        self.mail_pass = ""
         self.mail_postfix="163.com"
 
 
