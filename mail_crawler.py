@@ -22,14 +22,18 @@ class Email163:
         self.cookie = cookielib.CookieJar()
         cookiePro = urllib2.HTTPCookieProcessor(self.cookie)
         urllib2.install_opener(urllib2.build_opener(cookiePro))
+        self.passwd = ""
  
     def login(self,user,pwd):
         '''
             登录
         '''
+        if pwd == "":
+            pwd = self.passwd
+            
         postdata = urllib.urlencode({
-                'username':'W93126721@163.com',
-                'password':'198039',
+                'username':user,
+                'password':pwd,
                 'type':1
             })
         #注意版本不同，登录URL也不同
@@ -100,6 +104,9 @@ class Email163:
             content = Djson.decode(res)['resultVar']
         time.sleep(3)
         return content
+
+
+        
          
              
 '''
@@ -108,7 +115,7 @@ class Email163:
 #初始化
 mail163 = Email163()
 #登录
-mail163.login('W93126721@163.com','198039')
+mail163.login('W93126721@163.com',"")
 time.sleep(2)
  
 #获取收件箱
