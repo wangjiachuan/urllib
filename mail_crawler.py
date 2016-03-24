@@ -1,8 +1,8 @@
 #coding:utf-8
 '''
     模拟登陆163邮箱并下载邮件内容
-    @author: fc_lamp
-    @blog:fc-lamp.blog.163.com
+    @author: 
+    @blog:
 '''
 import urllib
 import urllib2
