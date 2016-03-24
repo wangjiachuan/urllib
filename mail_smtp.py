@@ -1,92 +1,68 @@
-#-*- coding: utf8 -*-
-import sys
-import time
-import traceback
-import os,time
-import random
-import re
-import urllib
-import urllib2
-import cookielib
-import csv
-
+# -*- coding: utf-8 -*-
 import smtplib
-from email.mime.text import MIMEText 
+import email.MIMEMultipart# import MIMEMultipart
+import email.MIMEText# import MIMEText
+import email.MIMEBase# import MIMEBase
+import os.path
+import mimetypes
+From = "w93126721@163.com"
+To = "93126721@qq.com"
+file_name = "d:/1.txt"#附件名
 
+server = smtplib.SMTP("smtp.163.com")
+server.login("w93126721","198039wang") #仅smtp服务器需要验证时
 
-class Crawler(object):
+# 构造MIMEMultipart对象做为根容器
+main_msg = email.MIMEMultipart.MIMEMultipart()
 
+# 构造MIMEText对象做为邮件显示内容并附加到根容器
+text_msg = email.MIMEText.MIMEText("this is a test text to text mime",_charset="utf-8")
+main_msg.attach(text_msg)
 
-    def __init__(self):
-        self.cookie = cookielib.CookieJar()
-        self.opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(self.cookie))
-        #urllib2.install_opener(self.opener)
-        self.urllogin = "http://mail.163.com/"
-        #self.login = {"return":"index.php","username":"W93126721","password":""}
-        self.login = {"return":"index.php","idPlaceholder":"W93126721@163.com","pwdPlaceholder":""}
-        pass 
-        
+# 构造MIMEBase对象做为文件附件内容并附加到根容器
 
-    def main(self):
+## 读入文件内容并格式化 [方式1]－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－
+data = open(file_name, 'rb')
+ctype,encoding = mimetypes.guess_type(file_name)
+if ctype is None or encoding is not None:
+	ctype = 'application/octet-stream'
+maintype,subtype = ctype.split('/',1)
+file_msg = email.MIMEBase.MIMEBase(maintype, subtype)
+file_msg.set_payload(data.read())
+data.close( )
+email.Encoders.encode_base64(file_msg)#把附件编码
+'''
+ 测试识别文件类型：mimetypes.guess_type(file_name)
+ rar 文件             ctype,encoding值：None None（ini文件、csv文件、apk文件）
+ txt text/plain None
+ py  text/x-python None
+ gif image/gif None
+ png image/x-png None
+ jpg image/pjpeg None
+ pdf application/pdf None
+ doc application/msword None
+ zip application/x-zip-compressed None
 
-        data = urllib.urlencode(self.login)
-        request = urllib2.Request(self.urllogin,data)
-        result = self.opener.open(request).read()
-        print(result)
-        pass
+encoding值在什么情况下不是None呢？以后有结果补充。
+'''
+#－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－－
 
+## 设置附件头
+basename = os.path.basename(file_name)
+file_msg.add_header('Content-Disposition','attachment', filename = basename)#修改邮件头
+main_msg.attach(file_msg)
 
+# 设置根容器属性
+main_msg['From'] = From
+main_msg['To'] = To
+main_msg['Subject'] = "attach test "
+main_msg['Date'] = email.Utils.formatdate( )
 
-class Mailer(object):
-    def __init__(self):
-        # 定义发送列表
-        self.mailto_list=["93126721@qq.com","93126721@qq.com"]
-        # 设置服务器名称、用户名、密码以及邮件后缀
-        self.mail_host = "smtp.163.com"
-        self.mail_user = "W93126721"
-        self.mail_pass = ""
-        self.mail_postfix="163.com"
+# 得到格式化后的完整文本
+fullText = main_msg.as_string( )
 
-
-    
-    def main(self):
-        if (True == self.send_mail(self.mailto_list,"subject","context")):
-            print ("测试成功")
-        else:
-            print ("测试失败") 
-        pass
-
-    def send_mail(self,to_list, sub, context):
-        '''''
-        to_list: 发送给谁
-        sub: 主题
-        context: 内容
-        send_mail("xxx@126.com","sub","context")
-        '''
-        me = self.mail_user + "<"+self.mail_user+"@"+self.mail_postfix+">"
-        msg = MIMEText(context)
-        msg['Subject'] = sub
-        msg['From'] = me
-        msg['To'] = ";".join(to_list)
-        try:
-            send_smtp = smtplib.SMTP()
-            send_smtp.connect(self.mail_host)
-            send_smtp.login(self.mail_user, self.mail_pass)
-            send_smtp.sendmail(me, to_list, msg.as_string())
-            send_smtp.close()
-            return True
-        except Exception, e:
-            print(str(e))
-            return False
-
-
-
-
-    
-if __name__ == '__main__':
-
-    #myCrawler = Crawler()
-    #myCrawler.main()
-
-    myMailer = Mailer()
-    myMailer.main()
+# 用smtp发送邮件
+try:
+    server.sendmail(From, To, fullText)
+finally:
+    server.quit()
