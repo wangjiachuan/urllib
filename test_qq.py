@@ -1,13 +1,11 @@
 import smtplib
-
-
 from email.mime.text import MIMEText
 from smtplib import SMTPHeloError, SMTPAuthenticationError, SMTPHeloError, SMTPSenderRefused
 
 #easy send email, only can send plain text
 def sendmail(target, subject, content) :
     msg = MIMEText(content)
-    from_addr ="9312671@qq.com"
+    from_addr ="w9312671@163.com"
     to_addr = target
 
     msg['Subject'] = subject
@@ -15,8 +13,8 @@ def sendmail(target, subject, content) :
     msg['To'] = to_addr
 
     try:
-        s = smtplib.SMTP('smtp.qq.com')
-        s.login('93126721', '') 
+        s = smtplib.SMTP('smtp.163.com')
+        s.login('w93126721', '198039wang') 
         s.sendmail(from_addr, to_addr, msg.as_string())
     except SMTPHeloError:
         print ('Error: Can not connect server.')

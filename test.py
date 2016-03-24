@@ -5,18 +5,18 @@ import email.MIMEText# import MIMEText
 import email.MIMEBase# import MIMEBase
 import os.path
 import mimetypes
-From = "93126721@qq.com"
-To = "w93126721@163.com"
-file_name = "c:/1.png"#附件名
+From = "w93126721@163.com"
+To = "93126721@qq.com"
+file_name = "d:/1.txt"#附件名
 
-server = smtplib.SMTP("smtp.qq.com")
-server.login("93126721","") #仅smtp服务器需要验证时
+server = smtplib.SMTP("smtp.163.com")
+server.login("w93126721","198039wang") #仅smtp服务器需要验证时
 
 # 构造MIMEMultipart对象做为根容器
 main_msg = email.MIMEMultipart.MIMEMultipart()
 
 # 构造MIMEText对象做为邮件显示内容并附加到根容器
-text_msg = email.MIMEText.MIMEText("我this is a test text to text mime",_charset="utf-8")
+text_msg = email.MIMEText.MIMEText("this is a test text to text mime",_charset="utf-8")
 main_msg.attach(text_msg)
 
 # 构造MIMEBase对象做为文件附件内容并附加到根容器
